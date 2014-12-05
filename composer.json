@@ -1,0 +1,21 @@
+{
+    "name": "weixin/yii2-weixin",
+    "description": "weixin sdk",
+    "type": "yii2-extension",
+    "keywords": ["yii2","extension"],
+    "license": "LGPL-2.1",
+    "authors": [
+        {
+            "name": "lujian",
+            "email": "254461627@qq.com"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "weixin\\": ""
+        }
+    }
+}
