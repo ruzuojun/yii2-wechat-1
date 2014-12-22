@@ -1,52 +1,9 @@
 <?php
 
-namespace weixin;
-/**
- *	微信公众平台PHP-SDK, 官方API部分
- *  @author  dodge <dodgepudding@gmail.com>
- *  @link https://github.com/dodgepudding/wechat-php-sdk
- *  @version 1.2
- *  usage:
- *   $options = array(
- *			'token'=>'tokenaccesskey', //填写你设定的key
- *			'encodingaeskey'=>'encodingaeskey', //填写加密用的EncodingAESKey
- *			'appid'=>'wxdk1234567890', //填写高级调用功能的app id
- *			'appsecret'=>'xxxxxxxxxxxxxxxxxxx', //填写高级调用功能的密钥
- *			'partnerid'=>'88888888', //财付通商户身份标识
- *			'partnerkey'=>'', //财付通商户权限密钥Key
- *			'paysignkey'=>'' //商户签名密钥Key
- *		);
- *	 $weObj = new Wechat($options);
- *   $weObj->valid();
- *   $type = $weObj->getRev()->getRevType();
- *   switch($type) {
- *   		case Wechat::MSGTYPE_TEXT:
- *   			$weObj->text("hello, I'm wechat")->reply();
- *   			exit;
- *   			break;
- *   		case Wechat::MSGTYPE_EVENT:
- *   			....
- *   			break;
- *   		case Wechat::MSGTYPE_IMAGE:
- *   			...
- *   			break;
- *   		default:
- *   			$weObj->text("help info")->reply();
- *   }
- *
- *   //获取菜单操作:
- *   $menu = $weObj->getMenu();
- *   //设置菜单
- *   $newmenu =  array(
- *   		"button"=>
- *   			array(
- *   				array('type'=>'click','name'=>'最新消息','key'=>'MENU_KEY_NEWS'),
- *   				array('type'=>'view','name'=>'我要搜索','url'=>'http://www.baidu.com'),
- *   				)
- *  		);
- *   $result = $weObj->createMenu($newmenu);
- */
-class Wechat extends \yii\base\Widget
+namespace lujian\wechat;
+
+
+class Wechat extends yii\base\Component
 {
     const MSGTYPE_TEXT = 'text';
     const MSGTYPE_IMAGE = 'image';
@@ -119,7 +76,8 @@ class Wechat extends \yii\base\Widget
     public $errMsg = "no access";
     private $_logcallback;
 
-    public function __construct($options)
+
+    public function setConfig($options)
     {
         $this->token = isset($options['token'])?$options['token']:'';
         $this->encodingAesKey = isset($options['encodingaeskey'])?$options['encodingaeskey']:'';
