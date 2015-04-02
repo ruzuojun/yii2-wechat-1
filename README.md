@@ -232,7 +232,7 @@ $wechat = Yii::$app->wechat;
 
 反馈或贡献代码
 ------------
-您可以在[这里](https://github.com/lujian/yii2-wechat/issues)给我提出在使用中碰到的问题或Bug.
+您可以在[这里](https://github.com/lujian0571/yii2-wechat/issues)给我提出在使用中碰到的问题或Bug.
 我会在第一时间回复您并修复.
 
 您也可以 发送邮件254461627@qq.com给我并且说明您的问题.
