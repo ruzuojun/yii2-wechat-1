@@ -5,9 +5,9 @@
     "keywords": ["yii2","extension", "wechat", "weixin", "sdk"],
     "license": "LGPL-2.1",
     "support": {
-        "issues": "https://github.com/lujian/yii2-wechat/issues",
-        "wiki": "https://github.com/lujian/yii2-wechat/wiki",
-        "source": "https://github.com/lujian/yii2-wechat"
+        "issues": "https://github.com/lujian0571/yii2-wechat/issues",
+        "wiki": "https://github.com/lujian0571/yii2-wechat/wiki",
+        "source": "https://github.com/lujian0571/yii2-wechat"
     },
     "authors": [
         {
