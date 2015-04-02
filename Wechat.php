@@ -35,6 +35,248 @@ namespace lujian\wechat;
 
 class Wechat extends yii\base\Component
 {
+const MSGTYPE_TEXT = 'text';
+	const MSGTYPE_IMAGE = 'image';
+	const MSGTYPE_LOCATION = 'location';
+	const MSGTYPE_LINK = 'link';
+	const MSGTYPE_EVENT = 'event';
+	const MSGTYPE_MUSIC = 'music';
+	const MSGTYPE_NEWS = 'news';
+	const MSGTYPE_VOICE = 'voice';
+	const MSGTYPE_VIDEO = 'video';
+	const EVENT_SUBSCRIBE = 'subscribe';       //订阅
+	const EVENT_UNSUBSCRIBE = 'unsubscribe';   //取消订阅
+	const EVENT_SCAN = 'SCAN';                 //扫描带参数二维码
+	const EVENT_LOCATION = 'LOCATION';         //上报地理位置
+	const EVENT_MENU_VIEW = 'VIEW';                     //菜单 - 点击菜单跳转链接
+	const EVENT_MENU_CLICK = 'CLICK';                   //菜单 - 点击菜单拉取消息
+	const EVENT_MENU_SCAN_PUSH = 'scancode_push';       //菜单 - 扫码推事件(客户端跳URL)
+	const EVENT_MENU_SCAN_WAITMSG = 'scancode_waitmsg'; //菜单 - 扫码推事件(客户端不跳URL)
+	const EVENT_MENU_PIC_SYS = 'pic_sysphoto';          //菜单 - 弹出系统拍照发图
+	const EVENT_MENU_PIC_PHOTO = 'pic_photo_or_album';  //菜单 - 弹出拍照或者相册发图
+	const EVENT_MENU_PIC_WEIXIN = 'pic_weixin';         //菜单 - 弹出微信相册发图器
+	const EVENT_MENU_LOCATION = 'location_select';      //菜单 - 弹出地理位置选择器
+	const EVENT_SEND_MASS = 'MASSSENDJOBFINISH';        //发送结果 - 高级群发完成
+	const EVENT_SEND_TEMPLATE = 'TEMPLATESENDJOBFINISH';//发送结果 - 模板消息发送结果
+	const EVENT_KF_SEESION_CREATE = 'kfcreatesession';  //多客服 - 接入会话
+	const EVENT_KF_SEESION_CLOSE = 'kfclosesession';    //多客服 - 关闭会话
+	const EVENT_KF_SEESION_SWITCH = 'kfswitchsession';  //多客服 - 转接会话
+	const EVENT_CARD_PASS = 'card_pass_check';          //卡券 - 审核通过
+	const EVENT_CARD_NOTPASS = 'card_not_pass_check';   //卡券 - 审核未通过
+	const EVENT_CARD_USER_GET = 'user_get_card';        //卡券 - 用户领取卡券
+	const EVENT_CARD_USER_DEL = 'user_del_card';        //卡券 - 用户删除卡券
+	const API_URL_PREFIX = 'https://api.weixin.qq.com/cgi-bin';
+	const AUTH_URL = '/token?grant_type=client_credential&';
+	const MENU_CREATE_URL = '/menu/create?';
+	const MENU_GET_URL = '/menu/get?';
+	const MENU_DELETE_URL = '/menu/delete?';
+	const GET_TICKET_URL = '/ticket/getticket?';
+	const CALLBACKSERVER_GET_URL = '/getcallbackip?';
+	const QRCODE_CREATE_URL='/qrcode/create?';
+	const QR_SCENE = 0;
+	const QR_LIMIT_SCENE = 1;
+	const QRCODE_IMG_URL='https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=';
+	const SHORT_URL='/shorturl?';
+	const USER_GET_URL='/user/get?';
+	const USER_INFO_URL='/user/info?';
+	const USER_UPDATEREMARK_URL='/user/info/updateremark?';
+	const GROUP_GET_URL='/groups/get?';
+	const USER_GROUP_URL='/groups/getid?';
+	const GROUP_CREATE_URL='/groups/create?';
+	const GROUP_UPDATE_URL='/groups/update?';
+	const GROUP_MEMBER_UPDATE_URL='/groups/members/update?';
+	const GROUP_MEMBER_BATCHUPDATE_URL='/groups/members/batchupdate?';
+	const CUSTOM_SEND_URL='/message/custom/send?';
+	const MEDIA_UPLOADNEWS_URL = '/media/uploadnews?';
+	const MASS_SEND_URL = '/message/mass/send?';
+	const TEMPLATE_SET_INDUSTRY_URL = '/message/template/api_set_industry?';
+	const TEMPLATE_ADD_TPL_URL = '/message/template/api_add_template?';
+	const TEMPLATE_SEND_URL = '/message/template/send?';
+	const MASS_SEND_GROUP_URL = '/message/mass/sendall?';
+	const MASS_DELETE_URL = '/message/mass/delete?';
+	const MASS_PREVIEW_URL = '/message/mass/preview?';
+	const MASS_QUERY_URL = '/message/mass/get?';
+	const UPLOAD_MEDIA_URL = 'http://file.api.weixin.qq.com/cgi-bin';
+	const MEDIA_UPLOAD_URL = '/media/upload?';
+	const MEDIA_GET_URL = '/media/get?';
+	const MEDIA_VIDEO_UPLOAD = '/media/uploadvideo?';
+    const MEDIA_FOREVER_UPLOAD_URL = '/material/add_material?';
+    const MEDIA_FOREVER_NEWS_UPLOAD_URL = '/material/add_news?';
+    const MEDIA_FOREVER_NEWS_UPDATE_URL = '/material/update_news?';
+    const MEDIA_FOREVER_GET_URL = '/material/get_material?';
+    const MEDIA_FOREVER_DEL_URL = '/material/del_material?';
+    const MEDIA_FOREVER_COUNT_URL = '/material/get_materialcount?';
+    const MEDIA_FOREVER_BATCHGET_URL = '/material/batchget_material?';
+	const OAUTH_PREFIX = 'https://open.weixin.qq.com/connect/oauth2';
+	const OAUTH_AUTHORIZE_URL = '/authorize?';
+	///多客服相关地址
+	const CUSTOM_SERVICE_GET_RECORD = '/customservice/getrecord?';
+	const CUSTOM_SERVICE_GET_KFLIST = '/customservice/getkflist?';
+	const CUSTOM_SERVICE_GET_ONLINEKFLIST = '/customservice/getonlinekflist?';
+	const API_BASE_URL_PREFIX = 'https://api.weixin.qq.com'; //以下API接口URL需要使用此前缀
+	const OAUTH_TOKEN_URL = '/sns/oauth2/access_token?';
+	const OAUTH_REFRESH_URL = '/sns/oauth2/refresh_token?';
+	const OAUTH_USERINFO_URL = '/sns/userinfo?';
+	const OAUTH_AUTH_URL = '/sns/auth?';
+	///多客服相关地址
+	const CUSTOM_SESSION_CREATE = '/customservice/kfsession/create?';
+	const CUSTOM_SESSION_CLOSE = '/customservice/kfsession/close?';
+	const CUSTOM_SESSION_SWITCH = '/customservice/kfsession/switch?';
+	const CUSTOM_SESSION_GET = '/customservice/kfsession/getsession?';
+	const CUSTOM_SESSION_GET_LIST = '/customservice/kfsession/getsessionlist?';
+	const CUSTOM_SESSION_GET_WAIT = '/customservice/kfsession/getwaitcase?';
+	const CS_KF_ACCOUNT_ADD_URL = '/customservice/kfaccount/add?';
+	const CS_KF_ACCOUNT_UPDATE_URL = '/customservice/kfaccount/update?';
+	const CS_KF_ACCOUNT_DEL_URL = '/customservice/kfaccount/del?';
+	const CS_KF_ACCOUNT_UPLOAD_HEADIMG_URL = '/customservice/kfaccount/uploadheadimg?';
+	///卡券相关地址
+	const CARD_CREATE                     = '/card/create?';
+	const CARD_DELETE                     = '/card/delete?';
+	const CARD_UPDATE                     = '/card/update?';
+	const CARD_GET                        = '/card/get?';
+	const CARD_BATCHGET                   = '/card/batchget?';
+	const CARD_MODIFY_STOCK               = '/card/modifystock?';
+	const CARD_LOCATION_BATCHADD          = '/card/location/batchadd?';
+	const CARD_LOCATION_BATCHGET          = '/card/location/batchget?';
+	const CARD_GETCOLORS                  = '/card/getcolors?';
+	const CARD_QRCODE_CREATE              = '/card/qrcode/create?';
+	const CARD_CODE_CONSUME               = '/card/code/consume?';
+	const CARD_CODE_DECRYPT               = '/card/code/decrypt?';
+	const CARD_CODE_GET                   = '/card/code/get?';
+	const CARD_CODE_UPDATE                = '/card/code/update?';
+	const CARD_CODE_UNAVAILABLE           = '/card/code/unavailable?';
+	const CARD_TESTWHILELIST_SET          = '/card/testwhitelist/set?';
+	const CARD_MEMBERCARD_ACTIVATE        = '/card/membercard/activate?';      //激活会员卡
+	const CARD_MEMBERCARD_UPDATEUSER      = '/card/membercard/updateuser?';    //更新会员卡
+	const CARD_MOVIETICKET_UPDATEUSER     = '/card/movieticket/updateuser?';   //更新电影票(未加方法)
+	const CARD_BOARDINGPASS_CHECKIN       = '/card/boardingpass/checkin?';     //飞机票-在线选座(未加方法)
+	const CARD_LUCKYMONEY_UPDATE          = '/card/luckymoney/updateuserbalance?';     //更新红包金额
+	const SEMANTIC_API_URL = '/semantic/semproxy/search?'; //语义理解
+	///数据分析接口
+	static $DATACUBE_URL_ARR = array(        //用户分析
+	        'user' => array(
+	                'summary' => '/datacube/getusersummary?',		//获取用户增减数据（getusersummary）
+	                'cumulate' => '/datacube/getusercumulate?',		//获取累计用户数据（getusercumulate）
+	        ),
+	        'article' => array(            //图文分析
+	                'summary' => '/datacube/getarticlesummary?',		//获取图文群发每日数据（getarticlesummary）
+	                'total' => '/datacube/getarticletotal?',		//获取图文群发总数据（getarticletotal）
+	                'read' => '/datacube/getuserread?',			//获取图文统计数据（getuserread）
+	                'readhour' => '/datacube/getuserreadhour?',		//获取图文统计分时数据（getuserreadhour）
+	                'share' => '/datacube/getusershare?',			//获取图文分享转发数据（getusershare）
+	                'sharehour' => '/datacube/getusersharehour?',		//获取图文分享转发分时数据（getusersharehour）
+	        ),
+	        'upstreammsg' => array(        //消息分析
+	                'summary' => '/datacube/getupstreammsg?',		//获取消息发送概况数据（getupstreammsg）
+					'hour' => '/datacube/getupstreammsghour?',	//获取消息分送分时数据（getupstreammsghour）
+	                'week' => '/datacube/getupstreammsgweek?',	//获取消息发送周数据（getupstreammsgweek）
+	                'month' => '/datacube/getupstreammsgmonth?',	//获取消息发送月数据（getupstreammsgmonth）
+	                'dist' => '/datacube/getupstreammsgdist?',	//获取消息发送分布数据（getupstreammsgdist）
+	                'distweek' => '/datacube/getupstreammsgdistweek?',	//获取消息发送分布周数据（getupstreammsgdistweek）
+	               	'distmonth' => '/datacube/getupstreammsgdistmonth?',	//获取消息发送分布月数据（getupstreammsgdistmonth）
+	        ),
+	        'interface' => array(        //接口分析
+	                'summary' => '/datacube/getinterfacesummary?',	//获取接口分析数据（getinterfacesummary）
+	                'summaryhour' => '/datacube/getinterfacesummaryhour?',	//获取接口分析分时数据（getinterfacesummaryhour）
+	        )
+	);
+	///微信摇一摇周边
+	const SHAKEAROUND_DEVICE_APPLYID = '/shakearound/device/applyid?';//申请设备ID
+	const SHAKEAROUND_DEVICE_SEARCH = '/shakearound/device/search?';//查询设备列表
+	const SHAKEAROUND_DEVICE_BINDLOCATION = '/shakearound/device/bindlocation?';//配置设备与门店ID的关系
+	const SHAKEAROUND_DEVICE_BINDPAGE = '/shakearound/device/bindpage?';//配置设备与页面的绑定关系
+	const SHAKEAROUND_PAGE_ADD = '/shakearound/page/add?';//增加页面
+	const SHAKEAROUND_PAGE_UPDATE = '/shakearound/page/update?';//编辑页面
+	const SHAKEAROUND_PAGE_SEARCH = '/shakearound/page/search?';//查询页面列表
+	const SHAKEAROUND_PAGE_DELETE = '/shakearound/page/delete?';//删除页面
+	const SHAKEAROUND_USER_GETSHAKEINFO = '/shakearound/user/getshakeinfo?';//获取摇周边的设备及用户信息
+	const SHAKEAROUND_STATISTICS_DEVICE = '/shakearound/statistics/device?';//以设备为维度的数据统计接口
+	private $token;
+	private $encodingAesKey;
+	private $encrypt_type;
+	private $appid;
+	private $appsecret;
+	private $access_token;
+	private $jsapi_ticket;
+	private $user_token;
+	private $partnerid;
+	private $partnerkey;
+	private $paysignkey;
+	private $postxml;
+	private $_msg;
+	private $_funcflag = false;
+	private $_receive;
+	private $_text_filter = true;
+	public $debug =  false;
+	public $errCode = 40001;
+	public $errMsg = "no access";
+	public $logcallback;
+
+	public function __construct($options)
+	{
+		$this->token = isset($options['token'])?$options['token']:'';
+		$this->encodingAesKey = isset($options['encodingaeskey'])?$options['encodingaeskey']:'';
+		$this->appid = isset($options['appid'])?$options['appid']:'';
+		$this->appsecret = isset($options['appsecret'])?$options['appsecret']:'';
+		$this->debug = isset($options['debug'])?$options['debug']:false;
+		$this->logcallback = isset($options['logcallback'])?$options['logcallback']:false;
+	}
+
+	public function setConfig($options)
+	{
+		$this->token = isset($options['token'])?$options['token']:'';
+		$this->encodingAesKey = isset($options['encodingaeskey'])?$options['encodingaeskey']:'';
+		$this->appid = isset($options['appid'])?$options['appid']:'';
+		$this->appsecret = isset($options['appsecret'])?$options['appsecret']:'';
+		$this->debug = isset($options['debug'])?$options['debug']:false;
+		$this->logcallback = isset($options['logcallback'])?$options['logcallback']:false;
+	}
+	
+<?php
+/**
+ *	微信公众平台PHP-SDK, 官方API部分
+ *  @author  dodge <dodgepudding@gmail.com>
+ *  @link https://github.com/dodgepudding/wechat-php-sdk
+ *  @version 1.2
+ *  usage:
+ *   $options = array(
+ *			'token'=>'tokenaccesskey', //填写你设定的key
+ *			'encodingaeskey'=>'encodingaeskey', //填写加密用的EncodingAESKey
+ *			'appid'=>'wxdk1234567890', //填写高级调用功能的app id
+ *			'appsecret'=>'xxxxxxxxxxxxxxxxxxx' //填写高级调用功能的密钥
+ *		);
+ *	 $weObj = new Wechat($options);
+ *   $weObj->valid();
+ *   $type = $weObj->getRev()->getRevType();
+ *   switch($type) {
+ *   		case Wechat::MSGTYPE_TEXT:
+ *   			$weObj->text("hello, I'm wechat")->reply();
+ *   			exit;
+ *   			break;
+ *   		case Wechat::MSGTYPE_EVENT:
+ *   			....
+ *   			break;
+ *   		case Wechat::MSGTYPE_IMAGE:
+ *   			...
+ *   			break;
+ *   		default:
+ *   			$weObj->text("help info")->reply();
+ *   }
+ *
+ *   //获取菜单操作:
+ *   $menu = $weObj->getMenu();
+ *   //设置菜单
+ *   $newmenu =  array(
+ *   		"button"=>
+ *   			array(
+ *   				array('type'=>'click','name'=>'最新消息','key'=>'MENU_KEY_NEWS'),
+ *   				array('type'=>'view','name'=>'我要搜索','url'=>'http://www.baidu.com'),
+ *   				)
+ *  		);
+ *   $result = $weObj->createMenu($newmenu);
+ */
+class Wechat
+{
 	const MSGTYPE_TEXT = 'text';
 	const MSGTYPE_IMAGE = 'image';
 	const MSGTYPE_LOCATION = 'location';
@@ -100,23 +342,31 @@ class Wechat extends yii\base\Component
 	const MEDIA_UPLOAD_URL = '/media/upload?';
 	const MEDIA_GET_URL = '/media/get?';
 	const MEDIA_VIDEO_UPLOAD = '/media/uploadvideo?';
+    const MEDIA_FOREVER_UPLOAD_URL = '/material/add_material?';
+    const MEDIA_FOREVER_NEWS_UPLOAD_URL = '/material/add_news?';
+    const MEDIA_FOREVER_NEWS_UPDATE_URL = '/material/update_news?';
+    const MEDIA_FOREVER_GET_URL = '/material/get_material?';
+    const MEDIA_FOREVER_DEL_URL = '/material/del_material?';
+    const MEDIA_FOREVER_COUNT_URL = '/material/get_materialcount?';
+    const MEDIA_FOREVER_BATCHGET_URL = '/material/batchget_material?';
 	const OAUTH_PREFIX = 'https://open.weixin.qq.com/connect/oauth2';
 	const OAUTH_AUTHORIZE_URL = '/authorize?';
+	///多客服相关地址
+	const CUSTOM_SERVICE_GET_RECORD = '/customservice/getrecord?';
+	const CUSTOM_SERVICE_GET_KFLIST = '/customservice/getkflist?';
+	const CUSTOM_SERVICE_GET_ONLINEKFLIST = '/customservice/getonlinekflist?';
 	const API_BASE_URL_PREFIX = 'https://api.weixin.qq.com'; //以下API接口URL需要使用此前缀
 	const OAUTH_TOKEN_URL = '/sns/oauth2/access_token?';
 	const OAUTH_REFRESH_URL = '/sns/oauth2/refresh_token?';
 	const OAUTH_USERINFO_URL = '/sns/userinfo?';
 	const OAUTH_AUTH_URL = '/sns/auth?';
 	///多客服相关地址
-	const CUSTOM_SERVICE_GET_RECORD = '/customservice/getrecord?';
-	const CUSTOM_SERVICE_GET_KFLIST = '/customservice/getkflist?';
-	const CUSTOM_SERVICE_GET_ONLINEKFLIST = '/customservice/getonlinekflist?';
-	const CUSTOM_SEESSION_CREATE = '/customservice/kfsession/create?';
-	const CUSTOM_SEESSION_CLOSE = '/customservice/kfsession/close?';
-	const CUSTOM_SEESSION_SWITCH = '/customservice/kfsession/switch?';
-	const CUSTOM_SEESSION_GET = '/customservice/kfsession/getsession?';
-	const CUSTOM_SEESSION_GET_LIST = '/customservice/kfsession/getsessionlist?';
-	const CUSTOM_SEESSION_GET_WAIT = '/customservice/kfsession/getwaitcase?';
+	const CUSTOM_SESSION_CREATE = '/customservice/kfsession/create?';
+	const CUSTOM_SESSION_CLOSE = '/customservice/kfsession/close?';
+	const CUSTOM_SESSION_SWITCH = '/customservice/kfsession/switch?';
+	const CUSTOM_SESSION_GET = '/customservice/kfsession/getsession?';
+	const CUSTOM_SESSION_GET_LIST = '/customservice/kfsession/getsessionlist?';
+	const CUSTOM_SESSION_GET_WAIT = '/customservice/kfsession/getwaitcase?';
 	const CS_KF_ACCOUNT_ADD_URL = '/customservice/kfaccount/add?';
 	const CS_KF_ACCOUNT_UPDATE_URL = '/customservice/kfaccount/update?';
 	const CS_KF_ACCOUNT_DEL_URL = '/customservice/kfaccount/del?';
@@ -172,8 +422,17 @@ class Wechat extends yii\base\Component
 	                'summaryhour' => '/datacube/getinterfacesummaryhour?',	//获取接口分析分时数据（getinterfacesummaryhour）
 	        )
 	);
-
-
+	///微信摇一摇周边
+	const SHAKEAROUND_DEVICE_APPLYID = '/shakearound/device/applyid?';//申请设备ID
+	const SHAKEAROUND_DEVICE_SEARCH = '/shakearound/device/search?';//查询设备列表
+	const SHAKEAROUND_DEVICE_BINDLOCATION = '/shakearound/device/bindlocation?';//配置设备与门店ID的关系
+	const SHAKEAROUND_DEVICE_BINDPAGE = '/shakearound/device/bindpage?';//配置设备与页面的绑定关系
+	const SHAKEAROUND_PAGE_ADD = '/shakearound/page/add?';//增加页面
+	const SHAKEAROUND_PAGE_UPDATE = '/shakearound/page/update?';//编辑页面
+	const SHAKEAROUND_PAGE_SEARCH = '/shakearound/page/search?';//查询页面列表
+	const SHAKEAROUND_PAGE_DELETE = '/shakearound/page/delete?';//删除页面
+	const SHAKEAROUND_USER_GETSHAKEINFO = '/shakearound/user/getshakeinfo?';//获取摇周边的设备及用户信息
+	const SHAKEAROUND_STATISTICS_DEVICE = '/shakearound/statistics/device?';//以设备为维度的数据统计接口
 	private $token;
 	private $encodingAesKey;
 	private $encrypt_type;
@@ -194,7 +453,6 @@ class Wechat extends yii\base\Component
 	public $errCode = 40001;
 	public $errMsg = "no access";
 	public $logcallback;
-
 	public function __construct($options)
 	{
 		$this->token = isset($options['token'])?$options['token']:'';
@@ -204,17 +462,6 @@ class Wechat extends yii\base\Component
 		$this->debug = isset($options['debug'])?$options['debug']:false;
 		$this->logcallback = isset($options['logcallback'])?$options['logcallback']:false;
 	}
-
-	public function setConfig($options)
-	{
-		$this->token = isset($options['token'])?$options['token']:'';
-		$this->encodingAesKey = isset($options['encodingaeskey'])?$options['encodingaeskey']:'';
-		$this->appid = isset($options['appid'])?$options['appid']:'';
-		$this->appsecret = isset($options['appsecret'])?$options['appsecret']:'';
-		$this->debug = isset($options['debug'])?$options['debug']:false;
-		$this->logcallback = isset($options['logcallback'])?$options['logcallback']:false;
-	}
-
 	/**
 	 * For weixin server validation
 	 */
@@ -224,20 +471,17 @@ class Wechat extends yii\base\Component
 	    $signature = isset($_GET["msg_signature"])?$_GET["msg_signature"]:$signature; //如果存在加密验证则用加密验证段
         $timestamp = isset($_GET["timestamp"])?$_GET["timestamp"]:'';
         $nonce = isset($_GET["nonce"])?$_GET["nonce"]:'';
-
 		$token = $this->token;
 		$tmpArr = array($token, $timestamp, $nonce,$str);
 		sort($tmpArr, SORT_STRING);
 		$tmpStr = implode( $tmpArr );
 		$tmpStr = sha1( $tmpStr );
-
 		if( $tmpStr == $signature ){
 			return true;
 		}else{
 			return false;
 		}
 	}
-
 	/**
 	 * For weixin server validation
 	 * @param bool $return 是否返回
@@ -281,7 +525,6 @@ class Wechat extends yii\base\Component
         			die('no access');
         	}
         }
-
         if (!$this->checkSignature($encryptStr)) {
         	if ($return)
         		return false;
@@ -290,7 +533,6 @@ class Wechat extends yii\base\Component
         }
         return true;
     }
-
 	/**
 	 * 设置发送消息
 	 * @param array $msg 消息数组
@@ -309,7 +551,6 @@ class Wechat extends yii\base\Component
     			return $this->_msg;
     		}
     }
-
     /**
      * 设置消息的星标标志，官方已取消对此功能的支持
      */
@@ -317,7 +558,6 @@ class Wechat extends yii\base\Component
     		$this->_funcflag = $flag;
     		return $this;
     }
-
     /**
      * 日志记录，可被重载。
      * @param mixed $log 输入日志
@@ -329,7 +569,6 @@ class Wechat extends yii\base\Component
     			return call_user_func($this->logcallback,$log);
     		}
     }
-
     /**
      * 获取微信服务器发来的信息
      */
@@ -344,7 +583,6 @@ class Wechat extends yii\base\Component
 		}
 		return $this;
 	}
-
 	/**
 	 * 获取微信服务器发来的信息
 	 */
@@ -352,7 +590,6 @@ class Wechat extends yii\base\Component
 	{
 		return $this->_receive;
 	}
-
 	/**
 	 * 获取消息发送者
 	 */
@@ -362,7 +599,6 @@ class Wechat extends yii\base\Component
 		else
 			return false;
 	}
-
 	/**
 	 * 获取消息接受者
 	 */
@@ -372,7 +608,6 @@ class Wechat extends yii\base\Component
 		else
 			return false;
 	}
-
 	/**
 	 * 获取接收消息的类型
 	 */
@@ -382,7 +617,6 @@ class Wechat extends yii\base\Component
 		else
 			return false;
 	}
-
 	/**
 	 * 获取消息ID
 	 */
@@ -392,7 +626,6 @@ class Wechat extends yii\base\Component
 		else
 			return false;
 	}
-
 	/**
 	 * 获取消息发送时间
 	 */
@@ -402,7 +635,6 @@ class Wechat extends yii\base\Component
 		else
 			return false;
 	}
-
 	/**
 	 * 获取接收消息内容正文
 	 */
@@ -414,7 +646,6 @@ class Wechat extends yii\base\Component
 		else
 			return false;
 	}
-
 	/**
 	 * 获取接收消息图片
 	 */
@@ -427,7 +658,6 @@ class Wechat extends yii\base\Component
 		else
 			return false;
 	}
-
 	/**
 	 * 获取接收消息链接
 	 */
@@ -441,7 +671,6 @@ class Wechat extends yii\base\Component
 		} else
 			return false;
 	}
-
 	/**
 	 * 获取接收地理位置
 	 */
@@ -456,7 +685,6 @@ class Wechat extends yii\base\Component
 		} else
 			return false;
 	}
-
 	/**
 	 * 获取上报地理位置事件
 	 */
@@ -470,7 +698,6 @@ class Wechat extends yii\base\Component
 		} else
 			return false;
 	}
-
 	/**
 	 * 获取接收事件推送
 	 */
@@ -487,7 +714,6 @@ class Wechat extends yii\base\Component
 			return false;
 		}
 	}
-
 	/**
 	 * 获取自定义菜单的扫码推事件信息
 	 *
@@ -503,7 +729,7 @@ class Wechat extends yii\base\Component
 	 */
 	public function getRevScanInfo(){
 		if (isset($this->_receive['ScanCodeInfo'])){
-		    if (!is_array($this->_receive['SendPicsInfo'])) {
+		    if (!is_array($this->_receive['ScanCodeInfo'])) {
 		        $array=(array)$this->_receive['ScanCodeInfo'];
 		        $this->_receive['ScanCodeInfo']=$array;
 		    }else {
@@ -516,7 +742,6 @@ class Wechat extends yii\base\Component
 			return false;
 		}
 	}
-
 	/**
 	 * 获取自定义菜单的图片发送事件信息
 	 *
@@ -560,7 +785,6 @@ class Wechat extends yii\base\Component
 			return false;
 		}
 	}
-
 	/**
 	 * 获取自定义菜单的地理位置选择器事件推送
 	 *
@@ -598,7 +822,6 @@ class Wechat extends yii\base\Component
 	        return false;
 	    }
 	}
-
 	/**
 	 * 获取接收语音推送
 	 */
@@ -611,7 +834,6 @@ class Wechat extends yii\base\Component
 		} else
 			return false;
 	}
-
 	/**
 	 * 获取接收视频推送
 	 */
@@ -624,7 +846,6 @@ class Wechat extends yii\base\Component
 		} else
 			return false;
 	}
-
 	/**
 	 * 获取接收TICKET
 	 */
@@ -634,7 +855,6 @@ class Wechat extends yii\base\Component
 		} else
 			return false;
 	}
-
 	/**
 	* 获取二维码的场景值
 	*/
@@ -645,7 +865,6 @@ class Wechat extends yii\base\Component
 			return false;
 		}
 	}
-
 	/**
 	* 获取主动推送的消息ID
 	* 经过验证，这个和普通的消息MsgId不一样
@@ -657,7 +876,6 @@ class Wechat extends yii\base\Component
 		} else
 			return false;
 	}
-
 	/**
 	* 获取模板消息发送状态
 	*/
@@ -667,7 +885,6 @@ class Wechat extends yii\base\Component
 		} else
 			return false;
 	}
-
 	/**
 	* 获取群发或模板消息发送结果
 	* 当Event为 MASSSENDJOBFINISH 或 TEMPLATESENDJOBFINISH，即高级群发/模板消息
@@ -677,7 +894,6 @@ class Wechat extends yii\base\Component
 			$array['Status'] = $this->_receive['Status'];
 		if (isset($this->_receive['MsgID'])) //发送的消息id
 			$array['MsgID'] = $this->_receive['MsgID'];
-
 		//以下仅当群发消息时才会有的事件内容
 		if (isset($this->_receive['TotalCount']))     //分组或openid列表内粉丝数量
 			$array['TotalCount'] = $this->_receive['TotalCount'];
@@ -693,7 +909,6 @@ class Wechat extends yii\base\Component
 		    return false;
 		}
 	}
-
 	/**
 	 * 获取多客服会话状态推送事件 - 接入会话
 	 * 当Event为 kfcreatesession 即接入会话
@@ -705,7 +920,6 @@ class Wechat extends yii\base\Component
 		} else
 			return false;
 	}
-
 	/**
 	 * 获取多客服会话状态推送事件 - 关闭会话
 	 * 当Event为 kfclosesession 即关闭会话
@@ -717,7 +931,6 @@ class Wechat extends yii\base\Component
 	    } else
 	        return false;
 	}
-
 	/**
 	 * 获取多客服会话状态推送事件 - 转接会话
 	 * 当Event为 kfswitchsession 即转接会话
@@ -738,7 +951,6 @@ class Wechat extends yii\base\Component
 	        return false;
 	    }
 	}
-
 	/**
 	 * 获取卡券事件推送 - 卡卷审核是否通过
 	 * 当Event为 card_pass_check(审核通过) 或 card_not_pass_check(未通过)
@@ -750,7 +962,6 @@ class Wechat extends yii\base\Component
 	    else
 	        return false;
 	}
-
 	/**
 	 * 获取卡券事件推送 - 领取卡券
 	 * 当Event为 user_get_card(用户领取卡券)
@@ -769,7 +980,6 @@ class Wechat extends yii\base\Component
 	        return false;
 	    }
 	}
-
 	/**
 	 * 获取卡券事件推送 - 删除卡券
 	 * 当Event为 user_del_card(用户删除卡券)
@@ -786,12 +996,10 @@ class Wechat extends yii\base\Component
 	        return false;
 	    }
 	}
-
 	public static function xmlSafeStr($str)
 	{
 		return '<![CDATA['.preg_replace("/[\\x00-\\x08\\x0b-\\x0c\\x0e-\\x1f]/",'',$str).']]>';
 	}
-
 	/**
 	 * 数据XML编码
 	 * @param mixed $data 数据
@@ -808,7 +1016,6 @@ class Wechat extends yii\base\Component
 	    }
 	    return $xml;
 	}
-
 	/**
 	 * XML编码
 	 * @param mixed $data 数据
@@ -834,7 +1041,6 @@ class Wechat extends yii\base\Component
 	    $xml   .= "</{$root}>";
 	    return $xml;
 	}
-
 	/**
 	 * 过滤文字回复\r\n换行符
 	 * @param string $text
@@ -844,7 +1050,6 @@ class Wechat extends yii\base\Component
 		if (!$this->_text_filter) return $text;
 		return str_replace("\r\n", "\n", $text);
 	}
-
 	/**
 	 * 设置回复消息
 	 * Example: $obj->text('hello')->reply();
@@ -883,7 +1088,6 @@ class Wechat extends yii\base\Component
 		$this->Message($msg);
 		return $this;
 	}
-
 	/**
 	 * 设置回复消息
 	 * Example: $obj->voice('media_id')->reply();
@@ -903,7 +1107,6 @@ class Wechat extends yii\base\Component
 		$this->Message($msg);
 		return $this;
 	}
-
 	/**
 	 * 设置回复消息
 	 * Example: $obj->video('media_id','title','description')->reply();
@@ -927,7 +1130,6 @@ class Wechat extends yii\base\Component
 		$this->Message($msg);
 		return $this;
 	}
-
 	/**
 	 * 设置回复音乐
 	 * @param string $title
@@ -957,7 +1159,6 @@ class Wechat extends yii\base\Component
 		$this->Message($msg);
 		return $this;
 	}
-
 	/**
 	 * 设置回复图文
 	 * @param array $newsData
@@ -976,7 +1177,6 @@ class Wechat extends yii\base\Component
 	{
 		$FuncFlag = $this->_funcflag ? 1 : 0;
 		$count = count($newsData);
-
 		$msg = array(
 			'ToUserName' => $this->getRevFrom(),
 			'FromUserName'=>$this->getRevTo(),
@@ -989,7 +1189,6 @@ class Wechat extends yii\base\Component
 		$this->Message($msg);
 		return $this;
 	}
-
 	/**
 	 *
 	 * 回复微信服务器, 此函数支持链式操作
@@ -1029,7 +1228,6 @@ class Wechat extends yii\base\Component
 		else
 			echo $xmldata;
 	}
-
     /**
      * xml格式加密，仅请求为加密方式时再用
      */
@@ -1044,7 +1242,6 @@ class Wechat extends yii\base\Component
 </xml>";
 	    return sprintf($format, $encrypt, $signature, $timestamp, $nonce);
 	}
-
 	/**
 	 * GET 请求
 	 * @param string $url
@@ -1067,7 +1264,6 @@ class Wechat extends yii\base\Component
 			return false;
 		}
 	}
-
 	/**
 	 * POST 请求
 	 * @param string $url
@@ -1104,7 +1300,6 @@ class Wechat extends yii\base\Component
 			return false;
 		}
 	}
-
 	/**
 	 * 设置缓存，按需重载
 	 * @param string $cachename
@@ -1116,7 +1311,6 @@ class Wechat extends yii\base\Component
 		//TODO: set cache implementation
 		return false;
 	}
-
 	/**
 	 * 获取缓存，按需重载
 	 * @param string $cachename
@@ -1126,7 +1320,6 @@ class Wechat extends yii\base\Component
 		//TODO: get cache implementation
 		return false;
 	}
-
 	/**
 	 * 清除缓存，按需重载
 	 * @param string $cachename
@@ -1136,7 +1329,6 @@ class Wechat extends yii\base\Component
 		//TODO: remove cache implementation
 		return false;
 	}
-
 	/**
 	 * 获取access_token
 	 * @param string $appid 如在类初始化时已提供，则可为空
@@ -1152,13 +1344,11 @@ class Wechat extends yii\base\Component
 		    $this->access_token=$token;
 		    return $this->access_token;
 		}
-
 		$authname = 'wechat_access_token'.$appid;
 		if ($rs = $this->getCache($authname))  {
 			$this->access_token = $rs;
 			return $rs;
 		}
-
 		$result = $this->http_get(self::API_URL_PREFIX.self::AUTH_URL.'appid='.$appid.'&secret='.$appsecret);
 		if ($result)
 		{
@@ -1175,7 +1365,6 @@ class Wechat extends yii\base\Component
 		}
 		return false;
 	}
-
 	/**
 	 * 删除验证数据
 	 * @param string $appid
@@ -1187,7 +1376,6 @@ class Wechat extends yii\base\Component
 		$this->removeCache($authname);
 		return true;
 	}
-
 	/**
 	 * 删除JSAPI授权TICKET
 	 * @param string $appid 用于多个appid时使用
@@ -1199,7 +1387,6 @@ class Wechat extends yii\base\Component
 		$this->removeCache($authname);
 		return true;
 	}
-
 	/**
 	 * 获取JSAPI授权TICKET
 	 * @param string $appid 用于多个appid时使用,可空
@@ -1210,7 +1397,7 @@ class Wechat extends yii\base\Component
 		if (!$appid) $appid = $this->appid;
 		if ($jsapi_ticket) { //手动指定token，优先使用
 		    $this->jsapi_ticket = $jsapi_ticket;
-		    return $this->access_token;
+		    return $this->jsapi_ticket;
 		}
 		$authname = 'wechat_jsapi_ticket'.$appid;
 		if ($rs = $this->getCache($authname))  {
@@ -1233,8 +1420,6 @@ class Wechat extends yii\base\Component
 		}
 		return false;
 	}
-
-
 	/**
 	 * 获取JsApi使用签名
 	 * @param string $url 网页的URL，自动处理#及其后面部分
@@ -1268,7 +1453,6 @@ class Wechat extends yii\base\Component
 	    );
 	    return $signPackage;
 	}
-
 	/**
 	 * 微信api不支持中文转义的json结构
 	 * @param array $arr
@@ -1316,7 +1500,6 @@ class Wechat extends yii\base\Component
 			return '[' . $json . ']'; //Return numerical JSON
 		return '{' . $json . '}'; //Return associative JSON
 	}
-
 	/**
 	 * 获取签名
 	 * @param array $arrdata 签名数组
@@ -1337,7 +1520,6 @@ class Wechat extends yii\base\Component
 		$Sign = $method($paramstring);
 		return $Sign;
 	}
-
 	/**
 	 * 生成随机字串
 	 * @param number $length 长度，默认为16，最长为32字节
@@ -1353,7 +1535,6 @@ class Wechat extends yii\base\Component
 		}
 		return $str;
 	}
-
 	/**
 	 * 获取微信服务器IP地址列表
 	 * @return array('127.0.0.1','127.0.0.1')
@@ -1373,7 +1554,6 @@ class Wechat extends yii\base\Component
 		}
 		return false;
 	}
-
 	/**
 	 * 创建菜单(认证后的订阅号可用)
 	 * @param array $data 菜单数组数据
@@ -1442,7 +1622,6 @@ class Wechat extends yii\base\Component
 		}
 		return false;
 	}
-
 	/**
 	 * 获取菜单(认证后的订阅号可用)
 	 * @return array('menu'=>array(....s))
@@ -1462,7 +1641,6 @@ class Wechat extends yii\base\Component
 		}
 		return false;
 	}
-
 	/**
 	 * 删除菜单(认证后的订阅号可用)
 	 * @return boolean
@@ -1482,18 +1660,19 @@ class Wechat extends yii\base\Component
 		}
 		return false;
 	}
-
 	/**
-	 * 上传多媒体文件(认证后的订阅号可用)
+	 * 上传临时素材，有效期为3天(认证后的订阅号可用)
 	 * 注意：上传大文件时可能需要先调用 set_time_limit(0) 避免超时
 	 * 注意：数组的键值任意，但文件名前必须加@，使用单引号以避免本地路径斜杠被转义
+     * 注意：临时素材的media_id是可复用的！
 	 * @param array $data {"media":'@Path\filename.jpg'}
 	 * @param type 类型：图片:image 语音:voice 视频:video 缩略图:thumb
 	 * @return boolean|array
 	 */
 	public function uploadMedia($data, $type){
 		if (!$this->access_token && !$this->checkAuth()) return false;
-		$result = $this->http_post(self::UPLOAD_MEDIA_URL.self::MEDIA_UPLOAD_URL.'access_token='.$this->access_token.'&type='.$type,$data,true);
+		//原先的上传多媒体文件接口使用 self::UPLOAD_MEDIA_URL 前缀
+		$result = $this->http_post(self::API_URL_PREFIX.self::MEDIA_UPLOAD_URL.'access_token='.$this->access_token.'&type='.$type,$data,true);
 		if ($result)
 		{
 			$json = json_decode($result,true);
@@ -1506,30 +1685,220 @@ class Wechat extends yii\base\Component
 		}
 		return false;
 	}
-
 	/**
-	 * 根据媒体文件ID获取媒体文件(认证后的订阅号可用)
+	 * 获取临时素材(认证后的订阅号可用)
 	 * @param string $media_id 媒体文件id
+	 * @param boolean $is_video 是否为视频文件，默认为否
 	 * @return raw data
 	 */
-	public function getMedia($media_id){
+	public function getMedia($media_id,$is_video=false){
 		if (!$this->access_token && !$this->checkAuth()) return false;
-		$result = $this->http_get(self::UPLOAD_MEDIA_URL.self::MEDIA_GET_URL.'access_token='.$this->access_token.'&media_id='.$media_id);
+		//原先的上传多媒体文件接口使用 self::UPLOAD_MEDIA_URL 前缀
+		//如果要获取的素材是视频文件时，不能使用https协议，必须更换成http协议
+		$url_prefix = $is_video?str_replace('https','http',self::API_URL_PREFIX):self::API_URL_PREFIX;
+		$result = $this->http_get($url_prefix.self::MEDIA_GET_URL.'access_token='.$this->access_token.'&media_id='.$media_id);
 		if ($result)
 		{
-			$json = json_decode($result,true);
-			if (isset($json['errcode'])) {
-				$this->errCode = $json['errcode'];
-				$this->errMsg = $json['errmsg'];
-				return false;
-			}
+            if (is_string($result)) {
+                $json = json_decode($result,true);
+                if (isset($json['errcode'])) {
+                    $this->errCode = $json['errcode'];
+                    $this->errMsg = $json['errmsg'];
+                    return false;
+                }
+            }
 			return $result;
 		}
 		return false;
 	}
-
+    /**
+     * 上传永久素材(认证后的订阅号可用)
+     * 新增的永久素材也可以在公众平台官网素材管理模块中看到
+     * 注意：上传大文件时可能需要先调用 set_time_limit(0) 避免超时
+     * 注意：数组的键值任意，但文件名前必须加@，使用单引号以避免本地路径斜杠被转义
+     * @param array $data {"media":'@Path\filename.jpg'}
+     * @param type 类型：图片:image 语音:voice 视频:video 缩略图:thumb
+     * @param boolean $is_video 是否为视频文件，默认为否
+     * @param array $video_info 视频信息数组，非视频素材不需要提供 array('title'=>'视频标题','introduction'=>'描述')
+     * @return boolean|array
+     */
+    public function uploadForeverMedia($data, $type,$is_video=false,$video_info=array()){
+        if (!$this->access_token && !$this->checkAuth()) return false;
+        //#TODO 暂不确定此接口是否需要让视频文件走http协议
+        //如果要获取的素材是视频文件时，不能使用https协议，必须更换成http协议
+        //$url_prefix = $is_video?str_replace('https','http',self::API_URL_PREFIX):self::API_URL_PREFIX;
+        //当上传视频文件时，附加视频文件信息
+        if ($is_video) $data['description'] = self::json_encode($video_info);
+        $result = $this->http_post(self::API_URL_PREFIX.self::MEDIA_FOREVER_UPLOAD_URL.'access_token='.$this->access_token.'&type='.$type,$data,true);
+        if ($result)
+        {
+            $json = json_decode($result,true);
+            if (!$json || !empty($json['errcode'])) {
+                $this->errCode = $json['errcode'];
+                $this->errMsg = $json['errmsg'];
+                return false;
+            }
+            return $json;
+        }
+        return false;
+    }
+    /**
+     * 上传永久图文素材(认证后的订阅号可用)
+     * 新增的永久素材也可以在公众平台官网素材管理模块中看到
+     * @param array $data 消息结构{"articles":[{...}]}
+     * @return boolean|array
+     */
+    public function uploadForeverArticles($data){
+        if (!$this->access_token && !$this->checkAuth()) return false;
+        $result = $this->http_post(self::API_URL_PREFIX.self::MEDIA_FOREVER_NEWS_UPLOAD_URL.'access_token='.$this->access_token,self::json_encode($data));
+        if ($result)
+        {
+            $json = json_decode($result,true);
+            if (!$json || !empty($json['errcode'])) {
+                $this->errCode = $json['errcode'];
+                $this->errMsg = $json['errmsg'];
+                return false;
+            }
+            return $json;
+        }
+        return false;
+    }
+    /**
+     * 修改永久图文素材(认证后的订阅号可用)
+     * 永久素材也可以在公众平台官网素材管理模块中看到
+     * @param string $media_id 图文素材id
+     * @param array $data 消息结构{"articles":[{...}]}
+     * @param int $index 更新的文章在图文素材的位置，第一篇为0，仅多图文使用
+     * @return boolean|array
+     */
+    public function updateForeverArticles($media_id,$data,$index=0){
+        if (!$this->access_token && !$this->checkAuth()) return false;
+        if (!isset($data['media_id'])) $data['media_id'] = $media_id;
+        if (!isset($data['index'])) $data['index'] = $index;
+        $result = $this->http_post(self::API_URL_PREFIX.self::MEDIA_FOREVER_NEWS_UPDATE_URL.'access_token='.$this->access_token,self::json_encode($data));
+        if ($result)
+        {
+            $json = json_decode($result,true);
+            if (!$json || !empty($json['errcode'])) {
+                $this->errCode = $json['errcode'];
+                $this->errMsg = $json['errmsg'];
+                return false;
+            }
+            return $json;
+        }
+        return false;
+    }
+    /**
+     * 获取永久素材(认证后的订阅号可用)
+     * 返回图文消息数组或二进制数据，失败返回false
+     * @param string $media_id 媒体文件id
+     * @param boolean $is_video 是否为视频文件，默认为否
+     * @return boolean|array|raw data
+     */
+    public function getForeverMedia($media_id,$is_video=false){
+        if (!$this->access_token && !$this->checkAuth()) return false;
+        $data = array('media_id' => $media_id);
+        //#TODO 暂不确定此接口是否需要让视频文件走http协议
+        //如果要获取的素材是视频文件时，不能使用https协议，必须更换成http协议
+        //$url_prefix = $is_video?str_replace('https','http',self::API_URL_PREFIX):self::API_URL_PREFIX;
+        $result = $this->http_post(self::API_URL_PREFIX.self::MEDIA_FOREVER_GET_URL.'access_token='.$this->access_token,self::json_encode($data));
+        if ($result)
+        {
+            if (is_string($result)) {
+                $json = json_decode($result,true);
+                if (isset($json['errcode'])) {
+                    $this->errCode = $json['errcode'];
+                    $this->errMsg = $json['errmsg'];
+                    return false;
+                }
+                return $json;
+            }
+            return $result;
+        }
+        return false;
+    }
+    /**
+     * 删除永久素材(认证后的订阅号可用)
+     * @param string $media_id 媒体文件id
+     * @return boolean
+     */
+    public function delForeverMedia($media_id){
+        if (!$this->access_token && !$this->checkAuth()) return false;
+        $data = array('media_id' => $media_id);
+        $result = $this->http_post(self::API_URL_PREFIX.self::MEDIA_FOREVER_DEL_URL.'access_token='.$this->access_token,self::json_encode($data));
+        if ($result)
+        {
+            $json = json_decode($result,true);
+            if (!$json || !empty($json['errcode'])) {
+                $this->errCode = $json['errcode'];
+                $this->errMsg = $json['errmsg'];
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+    /**
+     * 获取永久素材列表(认证后的订阅号可用)
+     * @param string $type 素材的类型,图片（image）、视频（video）、语音 （voice）、图文（news）
+     * @param int $offset 全部素材的偏移位置，0表示从第一个素材
+     * @param int $count 返回素材的数量，取值在1到20之间
+     * @return boolean|array
+     * 返回数组格式:
+     * array(
+     *  'total_count'=>0, //该类型的素材的总数
+     *  'item_count'=>0,  //本次调用获取的素材的数量
+     *  'item'=>array()   //素材列表数组，内容定义请参考官方文档
+     * )
+     */
+    public function getForeverList($type,$offset,$count){
+        if (!$this->access_token && !$this->checkAuth()) return false;
+        $data = array(
+            'type' => $type,
+            'offset' => $offset,
+            'count' => $count,
+        );
+        $result = $this->http_post(self::API_URL_PREFIX.self::MEDIA_FOREVER_BATCHGET_URL.'access_token='.$this->access_token,self::json_encode($data));
+        if ($result)
+        {
+            $json = json_decode($result,true);
+            if (isset($json['errcode'])) {
+                $this->errCode = $json['errcode'];
+                $this->errMsg = $json['errmsg'];
+                return false;
+            }
+            return $json;
+        }
+        return false;
+    }
+    /**
+     * 获取永久素材总数(认证后的订阅号可用)
+     * @return boolean|array
+     * 返回数组格式:
+     * array(
+     *  'voice_count'=>0, //语音总数量
+     *  'video_count'=>0, //视频总数量
+     *  'image_count'=>0, //图片总数量
+     *  'news_count'=>0   //图文总数量
+     * )
+     */
+    public function getForeverCount(){
+        if (!$this->access_token && !$this->checkAuth()) return false;
+        $result = $this->http_get(self::API_URL_PREFIX.self::MEDIA_FOREVER_COUNT_URL.'access_token='.$this->access_token);
+        if ($result)
+        {
+            $json = json_decode($result,true);
+            if (isset($json['errcode'])) {
+                $this->errCode = $json['errcode'];
+                $this->errMsg = $json['errmsg'];
+                return false;
+            }
+            return $json;
+        }
+        return false;
+    }
 	/**
-	 * 上传图文消息素材(认证后的订阅号可用)
+	 * 上传图文消息素材，用于群发(认证后的订阅号可用)
 	 * @param array $data 消息结构{"articles":[{...}]}
 	 * @return boolean|array
 	 */
@@ -1548,7 +1917,6 @@ class Wechat extends yii\base\Component
 		}
 		return false;
 	}
-
 	/**
 	 * 上传视频素材(认证后的订阅号可用)
 	 * @param array $data 消息结构
@@ -1579,7 +1947,6 @@ class Wechat extends yii\base\Component
 	    }
 	    return false;
 	}
-
 	/**
 	 * 高级群发消息, 根据OpenID列表群发图文消息(订阅号不可用)
 	 * 	注意：视频需要在调用uploadMedia()方法后，再使用 uploadMpVideo() 方法生成，
@@ -1612,7 +1979,6 @@ class Wechat extends yii\base\Component
 		}
 		return false;
 	}
-
 	/**
 	 * 高级群发消息, 根据群组id群发图文消息(认证后的订阅号可用)
 	 * 	注意：视频需要在调用uploadMedia()方法后，再使用 uploadMpVideo() 方法生成，
@@ -1645,7 +2011,6 @@ class Wechat extends yii\base\Component
 		}
 		return false;
 	}
-
 	/**
 	 * 高级群发消息, 删除群发图文消息(认证后的订阅号可用)
 	 * @param int $msg_id 消息id
@@ -1666,7 +2031,6 @@ class Wechat extends yii\base\Component
 		}
 		return false;
 	}
-
 	/**
 	 * 高级群发消息, 预览群发消息(认证后的订阅号可用)
 	 * 	注意：视频需要在调用uploadMedia()方法后，再使用 uploadMpVideo() 方法生成，
@@ -1696,7 +2060,6 @@ class Wechat extends yii\base\Component
 	    }
 	    return false;
 	}
-
 	/**
 	 * 高级群发消息, 查询群发消息发送状态(认证后的订阅号可用)
 	 * @param int $msg_id 消息id
@@ -1721,7 +2084,6 @@ class Wechat extends yii\base\Component
 		}
 		return false;
 	}
-
 	/**
 	 * 创建二维码ticket
 	 * @param int|string $scene_id 自定义追踪id,临时二维码只能用数值型
@@ -1753,16 +2115,14 @@ class Wechat extends yii\base\Component
 		}
 		return false;
 	}
-
 	/**
 	 * 获取二维码图片
 	 * @param string $ticket 传入由getQRCode方法生成的ticket参数
 	 * @return string url 返回http地址
 	 */
 	public function getQRUrl($ticket) {
-		return self::QRCODE_IMG_URL.$ticket;
+		return self::QRCODE_IMG_URL.urlencode($ticket);
 	}
-
 	/**
 	 * 长链接转短链接接口
 	 * @param string $long_url 传入要转换的长url
@@ -1787,7 +2147,6 @@ class Wechat extends yii\base\Component
 	    }
 	    return false;
 	}
-
 	/**
 	 * 获取统计数据
 	 * @param string $type  数据分类(user|article|upstreammsg|interface)分别为(用户分析|图文分析|消息分析|接口分析)
@@ -1817,7 +2176,6 @@ class Wechat extends yii\base\Component
 	    }
 	    return false;
 	}
-
 	/**
 	 * 批量获取关注用户列表
 	 * @param unknown $next_openid
@@ -1837,7 +2195,6 @@ class Wechat extends yii\base\Component
 		}
 		return false;
 	}
-
 	/**
 	 * 获取关注者详细信息
 	 * @param string $openid
@@ -1859,7 +2216,6 @@ class Wechat extends yii\base\Component
 		}
 		return false;
 	}
-
 	/**
 	 * 设置用户备注名
 	 * @param string $openid
@@ -1885,7 +2241,6 @@ class Wechat extends yii\base\Component
 	    }
 	    return false;
 	}
-
 	/**
 	 * 获取用户分组列表
 	 * @return boolean|array
@@ -1905,7 +2260,6 @@ class Wechat extends yii\base\Component
 		}
 		return false;
 	}
-
 	/**
 	 * 获取用户所在分组
 	 * @param string $openid
@@ -1929,7 +2283,6 @@ class Wechat extends yii\base\Component
 	    }
 	    return false;
 	}
-
 	/**
 	 * 新增自定分组
 	 * @param string $name 分组名称
@@ -1953,7 +2306,6 @@ class Wechat extends yii\base\Component
 		}
 		return false;
 	}
-
 	/**
 	 * 更改分组名称
 	 * @param int $groupid 分组id
@@ -1978,7 +2330,6 @@ class Wechat extends yii\base\Component
 		}
 		return false;
 	}
-
 	/**
 	 * 移动用户分组
 	 * @param int $groupid 分组id
@@ -2004,7 +2355,6 @@ class Wechat extends yii\base\Component
 		}
 		return false;
 	}
-
 	/**
 	 * 批量移动用户分组
 	 * @param int $groupid 分组id
@@ -2030,7 +2380,6 @@ class Wechat extends yii\base\Component
 		}
 		return false;
 	}
-
 	/**
 	 * 发送客服消息
 	 * @param array $data 消息结构{"touser":"OPENID","msgtype":"news","news":{...}}
@@ -2051,7 +2400,6 @@ class Wechat extends yii\base\Component
 		}
 		return false;
 	}
-
 	/**
 	 * oauth 授权跳转接口
 	 * @param string $callback 回调URI
@@ -2060,7 +2408,6 @@ class Wechat extends yii\base\Component
 	public function getOauthRedirect($callback,$state='',$scope='snsapi_userinfo'){
 		return self::OAUTH_PREFIX.self::OAUTH_AUTHORIZE_URL.'appid='.$this->appid.'&redirect_uri='.urlencode($callback).'&response_type=code&scope='.$scope.'&state='.$state.'#wechat_redirect';
 	}
-
 	/**
 	 * 通过code获取Access Token
 	 * @return array {access_token,expires_in,refresh_token,openid,scope}
@@ -2082,7 +2429,6 @@ class Wechat extends yii\base\Component
 		}
 		return false;
 	}
-
 	/**
 	 * 刷新access token并续期
 	 * @param string $refresh_token
@@ -2103,7 +2449,6 @@ class Wechat extends yii\base\Component
 		}
 		return false;
 	}
-
 	/**
 	 * 获取授权后的用户资料
 	 * @param string $access_token
@@ -2125,7 +2470,6 @@ class Wechat extends yii\base\Component
 		}
 		return false;
 	}
-
 	/**
 	 * 检验授权凭证是否有效
 	 * @param string $access_token
@@ -2146,7 +2490,6 @@ class Wechat extends yii\base\Component
 	    }
 	    return false;
 	}
-
 	/**
 	 * 模板消息 设置所属行业
 	 * @param int $id1  公众号模板消息所属行业编号，参看官方开发文档 行业代码
@@ -2169,7 +2512,6 @@ class Wechat extends yii\base\Component
 	    }
 	    return false;
 	}
-
 	/**
 	 * 模板消息 添加消息模板
 	 * 成功返回消息模板的调用id
@@ -2191,7 +2533,6 @@ class Wechat extends yii\base\Component
 	    }
 	    return false;
 	}
-
 	/**
 	 * 发送模板消息
 	 * @param array $data 消息结构
@@ -2235,7 +2576,6 @@ class Wechat extends yii\base\Component
 		}
 		return false;
 	}
-
 	/**
 	 * 获取多客服会话记录
 	 * @param array $data 数据结构{"starttime":123456789,"endtime":987654321,"openid":"OPENID","pagesize":10,"pageindex":1,}
@@ -2256,7 +2596,6 @@ class Wechat extends yii\base\Component
 		}
 		return false;
 	}
-
 	/**
 	 * 转发多客服消息
 	 * Example: $obj->transfer_customer_service($customer_account)->reply();
@@ -2270,13 +2609,12 @@ class Wechat extends yii\base\Component
 			'CreateTime'=>time(),
 			'MsgType'=>'transfer_customer_service',
 		);
-		if (!$customer_account) {
+		if ($customer_account) {
 			$msg['TransInfo'] = array('KfAccount'=>$customer_account);
 		}
 		$this->Message($msg);
 		return $this;
 	}
-
 	/**
 	 * 获取多客服客服基本信息
 	 *
@@ -2297,7 +2635,6 @@ class Wechat extends yii\base\Component
 		}
 		return false;
 	}
-
 	/**
 	 * 获取多客服在线客服接待信息
 	 *
@@ -2328,7 +2665,6 @@ class Wechat extends yii\base\Component
 	    }
 	    return false;
 	}
-
 	/**
 	 * 创建指定多客服会话
 	 * @tutorial 当用户已被其他客服接待或指定客服不在线则会失败
@@ -2344,11 +2680,11 @@ class Wechat extends yii\base\Component
 	public function createKFSession($openid,$kf_account,$text=''){
 	    $data=array(
 	    	"openid" =>$openid,
-	        "nickname" => $kf_account
+	        "kf_account" => $kf_account
 	    );
 	    if ($text) $data["text"] = $text;
 	    if (!$this->access_token && !$this->checkAuth()) return false;
-	    $result = $this->http_post(self::API_URL_PREFIX.self::CUSTOM_SEESSION_CREATE.'access_token='.$this->access_token,self::json_encode($data));
+	    $result = $this->http_post(self::API_BASE_URL_PREFIX.self::CUSTOM_SESSION_CREATE.'access_token='.$this->access_token,self::json_encode($data));
 	    if ($result)
 	    {
 	        $json = json_decode($result,true);
@@ -2361,7 +2697,6 @@ class Wechat extends yii\base\Component
 	    }
 	    return false;
 	}
-
 	/**
 	 * 关闭指定多客服会话
 	 * @tutorial 当用户被其他客服接待时则会失败
@@ -2381,7 +2716,7 @@ class Wechat extends yii\base\Component
 	    );
 	    if ($text) $data["text"] = $text;
 	    if (!$this->access_token && !$this->checkAuth()) return false;
-	    $result = $this->http_post(self::API_URL_PREFIX.self::CUSTOM_SEESSION_CLOSE .'access_token='.$this->access_token,self::json_encode($data));
+	    $result = $this->http_post(self::API_BASE_URL_PREFIX.self::CUSTOM_SESSION_CLOSE .'access_token='.$this->access_token,self::json_encode($data));
 	    if ($result)
 	    {
 	        $json = json_decode($result,true);
@@ -2394,7 +2729,6 @@ class Wechat extends yii\base\Component
 	    }
 	    return false;
 	}
-
 	/**
 	 * 获取用户会话状态
 	 * @param string $openid           //用户openid
@@ -2408,7 +2742,7 @@ class Wechat extends yii\base\Component
 	 */
 	public function getKFSession($openid){
 	    if (!$this->access_token && !$this->checkAuth()) return false;
-	    $result = $this->http_get(self::API_URL_PREFIX.self::CUSTOM_SEESSION_GET .'access_token='.$this->access_token.'&openid='.$openid);
+	    $result = $this->http_get(self::API_BASE_URL_PREFIX.self::CUSTOM_SESSION_GET .'access_token='.$this->access_token.'&openid='.$openid);
 	    if ($result)
 	    {
 	        $json = json_decode($result,true);
@@ -2421,7 +2755,6 @@ class Wechat extends yii\base\Component
 	    }
 	    return false;
 	}
-
 	/**
 	 * 获取指定客服的会话列表
 	 * @param string $openid           //用户openid
@@ -2441,7 +2774,7 @@ class Wechat extends yii\base\Component
 	 */
 	public function getKFSessionlist($kf_account){
 	    if (!$this->access_token && !$this->checkAuth()) return false;
-	    $result = $this->http_get(self::API_URL_PREFIX.self::CUSTOM_SEESSION_GET_LIST .'access_token='.$this->access_token.'&kf_account='.$kf_account);
+	    $result = $this->http_get(self::API_BASE_URL_PREFIX.self::CUSTOM_SESSION_GET_LIST .'access_token='.$this->access_token.'&kf_account='.$kf_account);
 	    if ($result)
 	    {
 	        $json = json_decode($result,true);
@@ -2454,7 +2787,6 @@ class Wechat extends yii\base\Component
 	    }
 	    return false;
 	}
-
 	/**
 	 * 获取未接入会话列表
 	 * @param string $openid           //用户openid
@@ -2477,7 +2809,7 @@ class Wechat extends yii\base\Component
 	 */
 	public function getKFSessionWait(){
 	    if (!$this->access_token && !$this->checkAuth()) return false;
-	    $result = $this->http_get(self::API_URL_PREFIX.self::CUSTOM_SEESSION_GET_WAIT .'access_token='.$this->access_token);
+	    $result = $this->http_get(self::API_BASE_URL_PREFIX.self::CUSTOM_SESSION_GET_WAIT .'access_token='.$this->access_token);
 	    if ($result)
 	    {
 	        $json = json_decode($result,true);
@@ -2490,7 +2822,6 @@ class Wechat extends yii\base\Component
 	    }
 	    return false;
 	}
-
 	/**
 	 * 添加客服账号
 	 *
@@ -2524,7 +2855,6 @@ class Wechat extends yii\base\Component
 		}
 		return false;
 	}
-
 	/**
 	 * 修改客服账号信息
 	 *
@@ -2558,7 +2888,6 @@ class Wechat extends yii\base\Component
 	    }
 	    return false;
 	}
-
 	/**
 	 * 删除客服账号
 	 *
@@ -2585,7 +2914,6 @@ class Wechat extends yii\base\Component
 	    }
 	    return false;
 	}
-
 	/**
 	 * 上传客服头像
 	 *
@@ -2613,7 +2941,6 @@ class Wechat extends yii\base\Component
 	    }
 	    return false;
 	}
-
 	/**
 	 * 语义理解接口
 	 * @param String $uid      用户唯一id（非开发者id），用户区分公众号下的不同用户（建议填入用户openid）
@@ -2655,7 +2982,6 @@ class Wechat extends yii\base\Component
 	    }
 	    return false;
 	}
-
     /**
      * 创建卡券
      * @param Array $data      卡券数据
@@ -2675,7 +3001,6 @@ class Wechat extends yii\base\Component
         }
         return false;
     }
-
     /**
      * 更改卡券信息
      * 调用该接口更新信息后会重新送审，卡券状态变更为待审核。已被用户领取的卡券会实时更新票面信息。
@@ -2696,7 +3021,6 @@ class Wechat extends yii\base\Component
         }
         return false;
     }
-
     /**
      * 删除卡券
      * 允许商户删除任意一类卡券。删除卡券后，该卡券对应已生成的领取用二维码、添加到卡包 JS API 均会失效。
@@ -2721,7 +3045,6 @@ class Wechat extends yii\base\Component
         }
         return false;
     }
-
     /**
      * 查询卡券详情
      * @param string $card_id
@@ -2744,7 +3067,6 @@ class Wechat extends yii\base\Component
         }
         return false;
     }
-
     /**
      * 获取颜色列表
 	 * 获得卡券的最新颜色列表，用于创建卡券
@@ -2764,7 +3086,6 @@ class Wechat extends yii\base\Component
         }
         return false;
     }
-
     /**
      * 拉取门店列表
 	 * 获取在公众平台上申请创建的门店列表
@@ -2790,7 +3111,6 @@ class Wechat extends yii\base\Component
         }
         return false;
     }
-
     /**
      * 批量导入门店信息
 	 * @tutorial 返回插入的门店id列表，以逗号分隔。如果有插入失败的，则为-1，请自行核查是哪个插入失败
@@ -2811,7 +3131,6 @@ class Wechat extends yii\base\Component
         }
         return false;
     }
-
     /**
      * 生成卡券二维码
 	 * 成功则直接返回ticket值，可以用 getQRUrl($ticket) 换取二维码url
@@ -2855,7 +3174,6 @@ class Wechat extends yii\base\Component
         }
         return false;
     }
-
     /**
      * 消耗 code
      * 自定义 code（use_custom_code 为 true）的优惠券，在 code 被核销时，必须调用此接口。
@@ -2887,7 +3205,6 @@ class Wechat extends yii\base\Component
         }
         return false;
     }
-
     /**
      * code 解码
      * @param string $encrypt_code 通过 choose_card_info 获取的加密字符串
@@ -2915,7 +3232,6 @@ class Wechat extends yii\base\Component
         }
         return false;
     }
-
     /**
      * 查询 code 的有效性（非自定义 code）
      * @param string $code
@@ -2948,7 +3264,6 @@ class Wechat extends yii\base\Component
         }
         return false;
     }
-
     /**
      * 批量查询卡列表
 	 * @param $offset  开始拉取的偏移，默认为0从头开始
@@ -2981,7 +3296,6 @@ class Wechat extends yii\base\Component
         }
         return false;
     }
-
     /**
      * 更改 code
      * 为确保转赠后的安全性，微信允许自定义code的商户对已下发的code进行更改。
@@ -3010,7 +3324,6 @@ class Wechat extends yii\base\Component
         }
         return false;
     }
-
     /**
      * 设置卡券失效
      * 设置卡券失效的操作不可逆
@@ -3037,7 +3350,6 @@ class Wechat extends yii\base\Component
         }
         return false;
     }
-
     /**
      * 库存修改
      * @param string $data
@@ -3057,7 +3369,6 @@ class Wechat extends yii\base\Component
         }
         return false;
     }
-
     /**
      * 激活/绑定会员卡
      * @param string $data 具体结构请参看卡券开发文档(6.1.1 激活/绑定会员卡)章节
@@ -3077,7 +3388,6 @@ class Wechat extends yii\base\Component
         }
         return false;
     }
-
     /**
      * 会员卡交易
      * 会员卡交易后每次积分及余额变更需通过接口通知微信，便于后续消息通知及其他扩展功能。
@@ -3098,7 +3408,6 @@ class Wechat extends yii\base\Component
         }
         return false;
     }
-
     /**
      * 更新红包金额
      * @param string $code      红包的序列号
@@ -3126,7 +3435,6 @@ class Wechat extends yii\base\Component
         }
         return false;
     }
-
     /**
      * 设置卡券测试白名单
      * @param string $openid    测试的 openid 列表
@@ -3152,7 +3460,591 @@ class Wechat extends yii\base\Component
         }
         return false;
     }
-
+    /**
+     * [applyShakeAroundDevice 申请配置设备所需的UUID、Major、Minor。
+     * 若激活率小于50%，不能新增设备。单次新增设备超过500 个，需走人工审核流程。
+     * 审核通过后，可用迒回的批次ID 用“查询设备列表”接口拉取本次申请的设备ID]
+     * @param array $data
+     * array(
+     *      "quantity" => 3,//申请的设备ID 的数量，单次新增设备超过500 个,需走人工审核流程(必填)
+     *      "apply_reason" => "测试",//申请理由(必填)
+     *      "comment" => "测试专用",//备注(非必填)
+     *      "poi_id" => 1234 //设备关联的门店ID(非必填)
+     * )
+     * @return boolean|mixed
+     * {
+        "data": {
+            "apply_id": 123,
+            "device_identifiers":[
+            {
+            "device_id":10100,
+            "uuid":"FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+            "major":10001,
+            "minor":10002
+            }
+            ]
+        },
+        "errcode": 0,
+        "errmsg": "success."
+        }
+        
+        apply_id:申请的批次ID，可用在“查询设备列表”接口按批次查询本次申请成功的设备ID
+        device_identifiers:指定的设备ID 列表
+        device_id:设备编号
+        uuid、major、minor
+        audit_status:审核状态。0：审核未通过、1：审核中、2：审核已通过；审核会在三个工作日内完成
+        audit_comment:审核备注，包括审核不通过的原因
+     * @access public
+     * @author polo<gao.bo168@gmail.com>
+     * @version 2015-3-25 下午1:24:06
+     * @copyright Show More
+     */
+    public function applyShakeAroundDevice($data){
+        if (!$this->access_token && !$this->checkAuth()) return false;
+        $result = $this->http_post(self::API_BASE_URL_PREFIX . self::SHAKEAROUND_DEVICE_APPLYID . 'access_token=' . $this->access_token, self::json_encode($data));
+        $this->log($result);
+        if ($result) {
+            $json = json_decode($result, true);
+            if (!$json || !empty($json['errcode'])) {
+                $this->errCode = $json['errcode'];
+                $this->errMsg  = $json['errmsg'];
+                return false;
+            }
+            return $json;
+        }
+        return false;
+    }
+    /**
+     * [searchShakeAroundDevice 查询已有的设备ID、UUID、Major、Minor、激活状态、备注信息、关联门店、关联页面等信息。
+     * 可指定设备ID 或完整的UUID、Major、Minor 查询，也可批量拉取设备信息列表。]
+     * @param array $data
+     * $data 三种格式:
+     * ①查询指定设备时：$data = array(
+     *                              "device_identifiers" => array(
+     *                                                          array(
+     *                                                              "device_id" => 10100,
+     *                                                              "uuid" => "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+     *                                                              "major" => 10001,
+     *                                                              "minor" => 10002
+     *                                                          )
+     *                                                      )
+     *                              );
+     * device_identifiers:指定的设备
+     * device_id:设备编号，若填了UUID、major、minor，则可不填设备编号，若二者都填，则以设备编号为优先
+     * uuid、major、minor:三个信息需填写完整，若填了设备编号，则可不填此信息
+     * +-------------------------------------------------------------------------------------------------------------
+     * ②需要分页查询或者指定范围内的设备时: $data = array(
+     *                                                  "begin" => 0,
+     *                                                  "count" => 3
+     *                                               );
+     * begin:设备列表的起始索引值
+     * count:待查询的设备个数
+     * +-------------------------------------------------------------------------------------------------------------
+     * ③当需要根据批次ID 查询时: $data = array(
+     *                                      "apply_id" => 1231,
+     *                                      "begin" => 0,
+     *                                      "count" => 3
+     *                                    );
+     * apply_id:批次ID
+     * +-------------------------------------------------------------------------------------------------------------
+     * @return boolean|mixed
+     *正确迒回JSON 数据示例：
+     *字段说明
+        {
+            "data": {
+                "devices": [          //指定的设备信息列表
+                    {
+                        "comment": "", //设备的备注信息
+                        "device_id": 10097, //设备编号
+                        "major": 10001,
+                        "minor": 12102,
+                        "page_ids": "15369", //与此设备关联的页面ID 列表，用逗号隔开
+                        "status": 1, //激活状态，0：未激活，1：已激活（但不活跃），2：活跃
+                        "poi_id": 0, //门店ID
+                        "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825"
+                    },
+                    {
+                        "comment": "", //设备的备注信息
+                        "device_id": 10098, //设备编号
+                        "major": 10001,
+                        "minor": 12103,
+                        "page_ids": "15368", //与此设备关联的页面ID 列表，用逗号隔开
+                        "status": 1, //激活状态，0：未激活，1：已激活（但不活跃），2：活跃
+                        "poi_id": 0, //门店ID
+                        "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825"
+                    }
+                ],
+                "total_count": 151 //商户名下的设备总量
+            },
+            "errcode": 0,
+            "errmsg": "success."
+        }
+     * @access public
+     * @author polo<gao.bo168@gmail.com>
+     * @version 2015-3-25 下午1:45:42
+     * @copyright Show More
+     */
+    public function searchShakeAroundDevice($data){
+        if (!$this->access_token && !$this->checkAuth()) return false;
+        $result = $this->http_post(self::API_BASE_URL_PREFIX . self::SHAKEAROUND_DEVICE_SEARCH . 'access_token=' . $this->access_token, self::json_encode($data));
+        $this->log($result);
+        if ($result) {
+            $json = json_decode($result, true);
+            if (!$json || !empty($json['errcode'])) {
+                $this->errCode = $json['errcode'];
+                $this->errMsg  = $json['errmsg'];
+                return false;
+            }
+            return $json;
+        }
+        return false;
+    }
+    /**
+     * [bindLocationShakeAroundDevice 修改设备关联的门店ID、设备的备注信息。
+     * 可用设备ID 或完整的UUID、Major、Minor指定设备，二者选其一。]
+     * @param string $device_id 设备编号，若填了UUID、major、minor，则可不填设备编号，若二者都填，则以设备编号为优先
+     * @param int $poi_id 待关联的门店ID
+     * @param string $comment 设备的备注信息
+     * @param string $uuid UUID、major、minor，三个信息需填写完整，若填了设备编号，则可不填此信息
+     * @param int $major
+     * @param int $minor
+     * @return boolean|mixed
+     * 正确返回JSON 数据示例:
+     * {
+        "data": {
+        },
+        "errcode": 0,
+        "errmsg": "success."
+       }
+     * @access public
+     * @author polo<gao.bo168@gmail.com>
+     * @version 2015-3-25 下午2:32:18
+     * @copyright Show More
+     */
+    public function bindLocationShakeAroundDevice($device_id,$poi_id,$comment,$uuid,$major,$minor){
+        if (!$this->access_token && !$this->checkAuth()) return false;
+        if(!$device_id){
+            if(!$uuid || !$major || !$minor){
+                return false;
+            }
+            $device_identifier = array(
+                'uuid' => $uuid,
+                'major' => $major,
+                'minor' => $minor
+            );
+        }else{
+            $device_identifier = array(
+                'device_id' => $device_id
+            );
+        }
+        $data = array(
+            'device_identifier' => $device_identifier,
+            'poi_id' => $poi_id,
+            'comment' => $comment
+        );
+        $result = $this->http_post(self::API_BASE_URL_PREFIX . self::SHAKEAROUND_DEVICE_BINDLOCATION . 'access_token=' . $this->access_token, self::json_encode($data));
+        $this->log($result);
+        if ($result) {
+            $json = json_decode($result, true);
+            if (!$json || !empty($json['errcode'])) {
+                $this->errCode = $json['errcode'];
+                $this->errMsg  = $json['errmsg'];
+                return false;
+            }
+            return $json;
+        }
+        return false;
+    }
+    /**
+     * [bindPageShakeAroundDevice 配置设备与页面的关联关系。
+     * 支持建立或解除关联关系，也支持新增页面或覆盖页面等操作。
+     * 配置完成后，在此设备的信号范围内，即可摇出关联的页面信息。
+     * 若设备配置多个页面，则随机出现页面信息]
+     * @param string $device_id 设备编号，若填了UUID、major、minor，则可不填设备编号，若二者都填，则以设备编号为优先
+     * @param array $page_ids 待关联的页面列表
+     * @param number $bind 关联操作标志位， 0 为解除关联关系，1 为建立关联关系
+     * @param number $append 新增操作标志位， 0 为覆盖，1 为新增
+     * @param string $uuid UUID、major、minor，三个信息需填写完整，若填了设备编号，则可不填此信息
+     * @param int $major
+     * @param int $minor
+     * @return boolean|mixed
+     * 正确返回JSON 数据示例:
+     * {
+        "data": {
+        },
+        "errcode": 0,
+        "errmsg": "success."
+       }
+     * @access public
+     * @author polo<gao.bo168@gmail.com>
+     * @version 2015-3-25 下午2:47:54
+     * @copyright Show More
+     */
+    public function bindPageShakeAroundDevice($device_id,$page_ids=array(),$bind=1,$append=1,$uuid,$major,$minor){
+        if (!$this->access_token && !$this->checkAuth()) return false;
+        if(!$device_id){
+            if(!$uuid || !$major || !$minor){
+                return false;
+            }
+            $device_identifier = array(
+                'uuid' => $uuid,
+                'major' => $major,
+                'minor' => $minor
+            );
+        }else{
+            $device_identifier = array(
+                'device_id' => $device_id
+            );
+        }
+        $data = array(
+            'device_identifier' => $device_identifier,
+            'page_ids' => $page_ids,
+            'bind' => $bind,
+            'append' => $append
+        );
+        $result = $this->http_post(self::API_BASE_URL_PREFIX . self::SHAKEAROUND_DEVICE_BINDPAGE . 'access_token=' . $this->access_token, self::json_encode($data));
+        $this->log($result);
+        if ($result) {
+            $json = json_decode($result, true);
+            if (!$json || !empty($json['errcode'])) {
+                $this->errCode = $json['errcode'];
+                $this->errMsg  = $json['errmsg'];
+                return false;
+            }
+            return $json;
+        }
+        return false;
+    }
+    /**
+     * [addShakeAroundPage 增加摇一摇出来的页面信息，包括在摇一摇页面出现的主标题、副标题、图片和点击进去的超链接。]
+     * @param string $title 在摇一摇页面展示的主标题，不超过6 个字
+     * @param string $description 在摇一摇页面展示的副标题，不超过7 个字
+     * @param sting $icon_url 在摇一摇页面展示的图片， 格式限定为：jpg,jpeg,png,gif; 建议120*120 ， 限制不超过200*200
+     * @param string $page_url 跳转链接
+     * @param string $comment 页面的备注信息，不超过15 个字,可不填
+     * @return boolean|mixed
+     * 正确返回JSON 数据示例:
+     * {
+        "data": {
+            "page_id": 28840 //新增页面的页面id
+        }
+        "errcode": 0,
+        "errmsg": "success."
+       }
+     * @access public
+     * @author polo<gao.bo168@gmail.com>
+     * @version 2015-3-25 下午2:57:09
+     * @copyright Show More
+     */
+    public function addShakeAroundPage($title,$description,$icon_url,$page_url,$comment=''){
+        if (!$this->access_token && !$this->checkAuth()) return false;
+        $data = array(
+            "title" => $title,
+            "description" => $description,
+            "icon_url" => $icon_url,
+            "page_url" => $page_url,
+            "comment" => $comment
+        );
+        $result = $this->http_post(self::API_BASE_URL_PREFIX . self::SHAKEAROUND_PAGE_ADD . 'access_token=' . $this->access_token, self::json_encode($data));
+        $this->log($result);
+        if ($result) {
+            $json = json_decode($result, true);
+            if (!$json || !empty($json['errcode'])) {
+                $this->errCode = $json['errcode'];
+                $this->errMsg  = $json['errmsg'];
+                return false;
+            }
+            return $json;
+        }
+        return false;
+    }
+    /**
+     * [updateShakeAroundPage 编辑摇一摇出来的页面信息，包括在摇一摇页面出现的主标题、副标题、图片和点击进去的超链接。]
+     * @param int $page_id
+     * @param string $title 在摇一摇页面展示的主标题，不超过6 个字
+     * @param string $description 在摇一摇页面展示的副标题，不超过7 个字
+     * @param sting $icon_url 在摇一摇页面展示的图片， 格式限定为：jpg,jpeg,png,gif; 建议120*120 ， 限制不超过200*200
+     * @param string $page_url 跳转链接
+     * @param string $comment 页面的备注信息，不超过15 个字,可不填
+     * @return boolean|mixed
+     * 正确返回JSON 数据示例:
+     * {
+        "data": {
+            "page_id": 28840 //编辑页面的页面ID
+        }
+        "errcode": 0,
+        "errmsg": "success."
+       }
+     * @access public
+     * @author polo<gao.bo168@gmail.com>
+     * @version 2015-3-25 下午3:02:51
+     * @copyright Show More
+     */
+    public function updateShakeAroundPage($page_id,$title,$description,$icon_url,$page_url,$comment=''){
+        if (!$this->access_token && !$this->checkAuth()) return false;
+        $data = array(
+            "page_id" => $page_id,
+            "title" => $title,
+            "description" => $description,
+            "icon_url" => $icon_url,
+            "page_url" => $page_url,
+            "comment" => $comment
+        );
+        $result = $this->http_post(self::API_BASE_URL_PREFIX . self::SHAKEAROUND_PAGE_UPDATE . 'access_token=' . $this->access_token, self::json_encode($data));
+        $this->log($result);
+        if ($result) {
+            $json = json_decode($result, true);
+            if (!$json || !empty($json['errcode'])) {
+                $this->errCode = $json['errcode'];
+                $this->errMsg  = $json['errmsg'];
+                return false;
+            }
+            return $json;
+        }
+        return false;
+    }
+    /**
+     * [searchShakeAroundPage 查询已有的页面，包括在摇一摇页面出现的主标题、副标题、图片和点击进去的超链接。
+     * 提供两种查询方式，①可指定页面ID 查询，②也可批量拉取页面列表。]
+     * @param array $page_ids
+     * @param int $begin
+     * @param int $count
+     * ①需要查询指定页面时:
+     * {
+        "page_ids":[12345, 23456, 34567]
+       }
+     * +-------------------------------------------------------------------------------------------------------------
+     * ②需要分页查询或者指定范围内的页面时:
+     * {
+        "begin": 0,
+        "count": 3
+       }
+     * +-------------------------------------------------------------------------------------------------------------
+     * @return boolean|mixed
+     * 正确返回JSON 数据示例:
+        {
+            "data": {
+                "pages": [
+                    {
+                        "comment": "just for test",
+                        "description": "test",
+                        "icon_url": "https://www.baidu.com/img/bd_logo1.png",
+                        "page_id": 28840,
+                        "page_url": "http://xw.qq.com/testapi1",
+                        "title": "测试1"
+                    },
+                    {
+                        "comment": "just for test",
+                        "description": "test",
+                        "icon_url": "https://www.baidu.com/img/bd_logo1.png",
+                        "page_id": 28842,
+                        "page_url": "http://xw.qq.com/testapi2",
+                        "title": "测试2"
+                    }
+                    ],
+                "total_count": 2
+            },
+            "errcode": 0,
+            "errmsg": "success."
+        }
+     *字段说明:
+     *total_count 商户名下的页面总数
+     *page_id 摇周边页面唯一ID
+     *title 在摇一摇页面展示的主标题
+     *description 在摇一摇页面展示的副标题
+     *icon_url 在摇一摇页面展示的图片
+     *page_url 跳转链接
+     *comment 页面的备注信息
+     * @access public
+     * @author polo<gao.bo168@gmail.com>
+     * @version 2015-3-25 下午3:12:17
+     * @copyright Show More
+     */
+    public function searchShakeAroundPage($page_ids=array(),$begin=0,$count=1){
+        if (!$this->access_token && !$this->checkAuth()) return false;
+        if(!empty($page_ids)){
+            $data = array(
+                'page_ids' => $page_ids
+            );
+        }else{
+            $data = array(
+                'begin' => $begin,
+                'count' => $count
+            );
+        }
+        $result = $this->http_post(self::API_BASE_URL_PREFIX . self::SHAKEAROUND_PAGE_SEARCH . 'access_token=' . $this->access_token, self::json_encode($data));
+        $this->log($result);
+        if ($result) {
+            $json = json_decode($result, true);
+            if (!$json || !empty($json['errcode'])) {
+                $this->errCode = $json['errcode'];
+                $this->errMsg  = $json['errmsg'];
+                return false;
+            }
+            return $json;
+        }
+        return false;
+    }
+    /**
+     * [deleteShakeAroundPage 删除已有的页面，包括在摇一摇页面出现的主标题、副标题、图片和点击进去的超链接。
+     * 只有页面与设备没有关联关系时，才可被删除。]
+     * @param array $page_ids
+     * {
+        "page_ids":[12345,23456,34567]
+       }
+     * @return boolean|mixed
+     * 正确返回JSON 数据示例:
+     * {
+        "data": {
+        },
+        "errcode": 0,
+        "errmsg": "success."
+       }
+     * @access public
+     * @author polo<gao.bo168@gmail.com>
+     * @version 2015-3-25 下午3:23:00
+     * @copyright Show More
+     */
+    public function deleteShakeAroundPage($page_ids=array()){
+        if (!$this->access_token && !$this->checkAuth()) return false;
+        $data = array(
+            'page_ids' => $page_ids
+        );
+        $result = $this->http_post(self::API_BASE_URL_PREFIX . self::SHAKEAROUND_PAGE_DELETE . 'access_token=' . $this->access_token, self::json_encode($data));
+        $this->log($result);
+        if ($result) {
+            $json = json_decode($result, true);
+            if (!$json || !empty($json['errcode'])) {
+                $this->errCode = $json['errcode'];
+                $this->errMsg  = $json['errmsg'];
+                return false;
+            }
+            return $json;
+        }
+        return false;
+    }
+    /**
+     * [getShakeInfoShakeAroundUser 获取设备信息，包括UUID、major、minor，以及距离、openID 等信息。]
+     * @param string $ticket 摇周边业务的ticket，可在摇到的URL 中得到，ticket生效时间为30 分钟
+     * @return boolean|mixed
+     * 正确返回JSON 数据示例:
+     * {
+        "data": {
+            "page_id ": 14211,
+            "beacon_info": {
+                "distance": 55.00620700469034,
+                "major": 10001,
+                "minor": 19007,
+                "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825"
+            },
+            "openid": "oVDmXjp7y8aG2AlBuRpMZTb1-cmA"
+        },
+        "errcode": 0,
+        "errmsg": "success."
+       }
+     * 字段说明:
+     * beacon_info 设备信息，包括UUID、major、minor，以及距离
+     * UUID、major、minor UUID、major、minor
+     * distance Beacon 信号与手机的距离
+     * page_id 摇周边页面唯一ID
+     * openid 商户AppID 下用户的唯一标识
+     * poi_id 门店ID，有的话则返回，没有的话不会在JSON 格式内
+     * @access public
+     * @author polo<gao.bo168@gmail.com>
+     * @version 2015-3-25 下午3:28:20
+     * @copyright Show More
+     */
+    public function getShakeInfoShakeAroundUser($ticket){
+        if (!$this->access_token && !$this->checkAuth()) return false;
+        $data = array('ticket' => $ticket);
+        $result = $this->http_post(self::API_BASE_URL_PREFIX . self::SHAKEAROUND_USER_GETSHAKEINFO . 'access_token=' . $this->access_token, self::json_encode($data));
+        $this->log($result);
+        if ($result) {
+            $json = json_decode($result, true);
+            if (!$json || !empty($json['errcode'])) {
+                $this->errCode = $json['errcode'];
+                $this->errMsg  = $json['errmsg'];
+                return false;
+            }
+            return $json;
+        }
+        return false;
+    }
+    /**
+     * [deviceShakeAroundStatistics description]
+     * @param int $device_id 设备编号，若填了UUID、major、minor，即可不填设备编号，二者选其一
+     * @param int $begin_date 起始日期时间戳，最长时间跨度为30 天
+     * @param int $end_date 结束日期时间戳，最长时间跨度为30 天
+     * @param string $uuid UUID、major、minor，三个信息需填写完成，若填了设备编辑，即可不填此信息，二者选其一
+     * @param int $major
+     * @param int $minor
+     * @return boolean|mixed
+     * 正确返回JSON 数据示例:
+     * {
+        "data": [
+            {
+                "click_pv": 0,
+                "click_uv": 0,
+                "ftime": 1425052800,
+                "shake_pv": 0,
+                "shake_uv": 0
+            },
+            {
+                "click_pv": 0,
+                "click_uv": 0,
+                "ftime": 1425139200,
+                "shake_pv": 0,
+                "shake_uv": 0
+            }
+        ],
+        "errcode": 0,
+        "errmsg": "success."
+       }
+     * 字段说明:
+     * ftime 当天0 点对应的时间戳
+     * click_pv 点击摇周边消息的次数
+     * click_uv 点击摇周边消息的人数
+     * shake_pv 摇周边的次数
+     * shake_uv 摇周边的人数
+     * @access public
+     * @author polo<gao.bo168@gmail.com>
+     * @version 2015-3-25 下午3:39:08
+     * @copyright Show More
+     */
+    public function deviceShakeAroundStatistics($device_id,$begin_date,$end_date,$uuid,$major,$minor){
+        if (!$this->access_token && !$this->checkAuth()) return false;
+        if(!$device_id){
+            if(!$uuid || !$major || !$minor){
+                return false;
+            }
+            $device_identifier = array(
+                'uuid' => $uuid,
+                'major' => $major,
+                'minor' => $minor
+            );
+        }else{
+            $device_identifier = array(
+                'device_id' => $device_id
+            );
+        }
+        $data = array(
+            'device_identifier' => $device_identifier,
+            'begin_date' => $begin_date,
+            'end_date' => $end_date
+        );
+        $result = $this->http_post(self::API_BASE_URL_PREFIX . self::SHAKEAROUND_STATISTICS_DEVICE . 'access_token=' . $this->access_token, self::json_encode($data));
+        $this->log($result);
+        if ($result) {
+            $json = json_decode($result, true);
+            if (!$json || !empty($json['errcode'])) {
+                $this->errCode = $json['errcode'];
+                $this->errMsg  = $json['errmsg'];
+                return false;
+            }
+            return $json;
+        }
+        return false;
+    }
 }
 /**
  * PKCS7Encoder class
@@ -3162,7 +4054,6 @@ class Wechat extends yii\base\Component
 class PKCS7Encoder
 {
     public static $block_size = 32;
-
     /**
      * 对需要加密的明文进行填充补位
      * @param $text 需要进行填充补位操作的明文
@@ -3185,7 +4076,6 @@ class PKCS7Encoder
         }
         return $text . $tmp;
     }
-
     /**
      * 对解密后的明文进行补位删除
      * @param decrypted 解密后的明文
@@ -3193,16 +4083,13 @@ class PKCS7Encoder
      */
     function decode($text)
     {
-
         $pad = ord(substr($text, -1));
         if ($pad < 1 || $pad > PKCS7Encoder::$block_size) {
             $pad = 0;
         }
         return substr($text, 0, (strlen($text) - $pad));
     }
-
 }
-
 /**
  * Prpcrypt class
  *
@@ -3211,12 +4098,16 @@ class PKCS7Encoder
 class Prpcrypt
 {
     public $key;
-
+    function __construct($k) {
+        $this->key = base64_decode($k . "=");
+    }
+    /**
+     * 兼容老版本php构造函数，不能在 __construct() 方法前边，否则报错
+     */
     function Prpcrypt($k)
     {
         $this->key = base64_decode($k . "=");
     }
-
     /**
      * 对明文进行加密
      * @param string $text 需要加密的明文
@@ -3224,7 +4115,6 @@ class Prpcrypt
      */
     public function encrypt($text, $appid)
     {
-
         try {
             //获得16位随机字符串，填充到明文之前
             $random = $this->getRandomStr();//"aaaabbbbccccdddd";
@@ -3241,7 +4131,6 @@ class Prpcrypt
             $encrypted = mcrypt_generic($module, $text);
             mcrypt_generic_deinit($module);
             mcrypt_module_close($module);
-
             //			print(base64_encode($encrypted));
             //使用BASE64对加密后的字符串进行编码
             return array(ErrorCode::$OK, base64_encode($encrypted));
@@ -3250,7 +4139,6 @@ class Prpcrypt
             return array(ErrorCode::$EncryptAESError, null);
         }
     }
-
     /**
      * 对密文进行解密
      * @param string $encrypted 需要解密的密文
@@ -3258,7 +4146,6 @@ class Prpcrypt
      */
     public function decrypt($encrypted, $appid)
     {
-
         try {
             //使用BASE64对需要解密的字符串进行解码
             $ciphertext_dec = base64_decode($encrypted);
@@ -3272,8 +4159,6 @@ class Prpcrypt
         } catch (Exception $e) {
             return array(ErrorCode::$DecryptAESError, null);
         }
-
-
         try {
             //去除补位字符
             $pkc_encoder = new PKCS7Encoder;
@@ -3297,17 +4182,13 @@ class Prpcrypt
             return array(ErrorCode::$ValidateAppidError, null);
         //不注释上边两行，避免传入appid是错误的情况
         return array(0, $xml_content, $from_appid); //增加appid，为了解决后面加密回复消息的时候没有appid的订阅号会无法回复
-
     }
-
-
     /**
      * 随机生成16位字符串
      * @return string 生成的字符串
      */
     function getRandomStr()
     {
-
         $str = "";
         $str_pol = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
         $max = strlen($str_pol) - 1;
@@ -3316,9 +4197,7 @@ class Prpcrypt
         }
         return $str;
     }
-
 }
-
 /**
  * error code
  * 仅用作类内部使用，不用于官方API接口的errCode码
